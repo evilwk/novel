@@ -62,5 +62,5 @@ class Qu(BaseNovel):
         """解析章节内容"""
         soup = BeautifulSoup(content, "html.parser")
         item = soup.find(id="content")
-        lines = ["<p>　　%s</p>" % text for text in item.stripped_strings if text.strip() != "chaptererror()"]
+        lines = ["<p>　　%s</p>" % text for text in item.stripped_strings if text.strip() != "chaptererror();"]
         return "\n".join(lines)
