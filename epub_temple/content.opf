@@ -18,11 +18,11 @@
     <item id="stylesheet" href="stylesheet.css" media-type="text/css"/>
     <item id="cover-image" href="cover.jpg" media-type="image/jpeg"/>
     <item id="title-page" href="title.xhtml" media-type="application/xhtml+xml"/>
-    ${manifest_item}
+${manifest_item}
   </manifest>
   <spine toc="ncx">
     <itemref idref="title-page"/>
-  	${spine_item}
+${spine_item}
   </spine>
   <guide>
     <reference href="title.xhtml" type="title-page" title="书籍信息"/>

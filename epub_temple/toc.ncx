@@ -14,6 +14,6 @@
             </navLabel>
             <content src="title.xhtml"/>
         </navPoint>
-        ${nav_point}
+${nav_point}
     </navMap>
 </ncx>
