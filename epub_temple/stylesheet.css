@@ -1,0 +1,8 @@
+h2 { text-align: center; page-break-before: always; font-weight: bold; border-bottom: dotted 2px Red; }
+a { color: blue; text-decoration: underline; }
+.cover { padding: 20px; text-align: center; }
+.cover img { border: solid #CCC 1px; padding: 3px; }
+.cover img:hover { background: #EFEFEF; }
+.bookinfo ul { padding: 5px; margin: 0px; list-style-type: none; border: solid #CCC 1px; margin-bottom: 6px; }
+.bookinfo ul li { padding: 5px; margin: 0px; border-bottom: dotted #CCC 1px; }
+.bookinfo ul li pre { margin-left: 30px; word-wrap: break-word; word-break: break-all; }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/" unique-identifier="bookid" version="2.0">
+  <metadata xmlns:opf="http://www.idpf.org/2007/opf">
+    <dc:title>${title}</dc:title>
+    <dc:identifier id="bookid">${bookid}</dc:identifier>
+    <dc:creator>${author}</dc:creator>
+    <dc:language>zh-CN</dc:language>
+    <dc:date>${create_time}</dc:date>
+    <dc:contributor>${source_title}</dc:contributor>
+    <dc:publisher>${source_title}, ${source_site}</dc:publisher>
+    <dc:subject>${book_subject}</dc:subject>
+    <dc:rights>Copyright (C) 2002-2008 ${source_site}</dc:rights>
+    <meta name="cover" content="cover-image"/>
+  </metadata>
+  <manifest>
+    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+    <item id="stylesheet" href="stylesheet.css" media-type="text/css"/>
+    <item id="cover-image" href="cover.jpg" media-type="image/jpeg"/>
+    <item id="title-page" href="title.xhtml" media-type="application/xhtml+xml"/>
+    ${manifest_item}
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="title-page"/>
+  	${spine_item}
+  </spine>
+  <guide>
+    <reference href="title.xhtml" type="title-page" title="书籍信息"/>
+  </guide>
+</package>
