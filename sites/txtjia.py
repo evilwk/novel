@@ -1,5 +1,8 @@
-from .site import BaseNovel
+from sites.site import BaseNovel
 from bs4 import BeautifulSoup
+import sys
+
+sys.path.append("..")
 import base
 import urllib.parse as urlparse
 
@@ -26,7 +29,6 @@ class TxtJia(BaseNovel):
         item_html = item.prettify()
         self.author = base.match(item_html, "作者：(.*)").strip()
         self.subject = item.find("a").string
-        item = soup.find("p", class_="con")
 
     def parse_chapter_list(self, content):
         """解析章节列表"""
@@ -40,7 +42,6 @@ class TxtJia(BaseNovel):
                     link=urlparse.urljoin(self.read_link, chapter_item["href"]),
                     title=chapter_item.string))
             index += 1
-        return self.chapter_list
 
     def parse_chapter_content(self, chapter, content):
         """解析章节内容"""

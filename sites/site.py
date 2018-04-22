@@ -8,6 +8,7 @@ import threading
 
 import sys
 
+sys.path.append("..")
 import base
 
 nav_point_temple = """        <navPoint id="{0}" playOrder="{1}">
@@ -68,6 +69,9 @@ class BaseNovel:
             read_page = base.get_html(self.read_link, encode=self.encode)
             self.parse_chapter_list(read_page)
 
+        if not self.chapter_list:
+            print("章节列表为空")
+            return
         print("%s 作者:%s 共%d章" % (self.name, self.author,
                                  len(self.chapter_list)))
         for chapter in self.chapter_list:
@@ -167,7 +171,7 @@ class BaseNovel:
         self._show_percent()
 
     def _show_percent(self):
-        with (self.lock):
+        with self.lock:
             count = len(self.futures)
             complete = len(
                 [future for future in self.futures if future.done()])
