@@ -9,21 +9,21 @@ __all__ = ["Qu"]
 
 
 class Qu(BaseNovel):
-    source_site = "https://www.qu.la"
-    source_title = "笔趣阁"
+    _source_site = "https://www.qu.la"
+    _source_title = "笔趣阁"
 
     def parse_base_info(self, content):
         soup = BeautifulSoup(content, "html.parser")
         item = soup.select("#fmimg > img")[0]
-        self.cover = urlparse.urljoin(self.novel_link, item["src"])
+        self._cover = urlparse.urljoin(self._novel_link, item["src"])
 
-        self.name = soup.find("h1").string.strip()
-        self.read_link = self.novel_link
-        self.id = "qu:%s" % self.read_link[
-                            self.read_link.rfind("/", 0, -1) + 1:-1]
+        self._name = soup.find("h1").string.strip()
+        self._read_link = self._novel_link
+        self._id = "qu:%s" % self._read_link[
+                             self._read_link.rfind("/", 0, -1) + 1:-1]
 
-        self.author = base.match(content, r'<meta property="og:novel:author" content="(.*)"/>') or ""
-        self.subject = base.match(content, r'<meta property="og:novel:category" content="(.*)"/>') or ""
+        self._author = base.match(content, r'<meta property="og:novel:author" content="(.*)"/>') or ""
+        self._subject = base.match(content, r'<meta property="og:novel:category" content="(.*)"/>') or ""
 
     def parse_chapter_list(self, content):
         """解析章节列表"""
@@ -46,10 +46,10 @@ class Qu(BaseNovel):
         # 章节列表
         index = 0
         for chapter_item in chapter_items:
-            self.chapter_list.append(
+            self._chapter_list.append(
                 dict(
                     index=index,
-                    link=urlparse.urljoin(self.read_link, chapter_item.a["href"]),
+                    link=urlparse.urljoin(self._read_link, chapter_item.a["href"]),
                     title=chapter_item.a.string))
             index += 1
 
