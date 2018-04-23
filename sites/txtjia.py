@@ -1,10 +1,9 @@
-from sites.site import BaseNovel
-from bs4 import BeautifulSoup
-import sys
-
-sys.path.append("..")
-import base
 import urllib.parse as urlparse
+
+from bs4 import BeautifulSoup
+
+import utils.base as base
+from sites.site import BaseNovel
 
 __all__ = ["TxtJia"]
 

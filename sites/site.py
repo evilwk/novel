@@ -6,10 +6,7 @@ import string
 import subprocess
 import threading
 
-import sys
-
-sys.path.append("..")
-import base
+import utils.base as base
 
 nav_point_temple = """        <navPoint id="{0}" playOrder="{1}">
             <navLabel>

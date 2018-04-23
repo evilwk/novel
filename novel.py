@@ -1,9 +1,9 @@
 # coding:utf-8
-import sys
 
-import base
-from sites import *
 from optparse import OptionParser
+
+import utils.base as base
+from sites import *
 
 config = {"txtjia": TxtJia, "qu": Qu}
 

@@ -2,11 +2,8 @@ import urllib.parse as urlparse
 
 from bs4 import BeautifulSoup
 
+import utils.base as base
 from sites.site import BaseNovel
-import sys
-
-sys.path.append("..")
-import base
 
 __all__ = ["Qu"]
 
