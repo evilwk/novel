@@ -5,7 +5,7 @@ from optparse import OptionParser
 import utils.base as base
 from sites import *
 
-config = {"txtjia": TxtJia, "qu": Qu}
+config = {"txtjia.com": TxtJia, "qu.la": Qu, "biquge.com.tw": Biquge}
 
 
 def parse_arg():

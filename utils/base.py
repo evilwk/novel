@@ -1,6 +1,6 @@
 # coding:utf-8
 import re
-
+from tld import get_tld
 import requests
 from requests.adapters import HTTPAdapter
 
@@ -49,17 +49,9 @@ def get_url_domain(url):
     if not url or url.strip() == '':
         return None
 
-    try:
-        url_host = match(url, r'https?://([^/]+)/')
-        assert url_host
-    except Exception as error:
-        return None
-
-    host_part = match(url_host, r'(\.[^.]+\.[^.]+)$') or url_host
-    assert host_part, 'unsupported url: ' + url
-
-    domain = match(host_part, r'([^.]+)')
-    return domain
+    res = get_tld(url, as_object=True)
+    if res:
+        return res.tld
 
 
 def make_zip(source_dir, output_filename):

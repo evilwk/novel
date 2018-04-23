@@ -5,11 +5,13 @@ from bs4 import BeautifulSoup
 import utils.base as base
 from sites.site import BaseNovel
 
-__all__ = ["Qu"]
+__all__ = ["Biquge"]
 
 
-class Qu(BaseNovel):
-    source_site = "https://www.qu.la"
+class Biquge(BaseNovel):
+    encode = "gbk"
+
+    source_site = "https://www.biquge.com.tw"
     source_title = "笔趣阁"
 
     def parse_base_info(self, content):
@@ -19,8 +21,8 @@ class Qu(BaseNovel):
 
         self.name = soup.find("h1").string.strip()
         self.read_link = self.novel_link
-        self.id = "qu:%s" % self.read_link[
-                            self.read_link.rfind("/", 0, -1) + 1:-1]
+        self.id = "biquge:%s" % self.read_link[
+                                self.read_link.rfind("/", 0, -1) + 1:-1]
 
         self.author = base.match(content, r'<meta property="og:novel:author" content="(.*)"/>') or ""
         self.subject = base.match(content, r'<meta property="og:novel:category" content="(.*)"/>') or ""
@@ -28,20 +30,7 @@ class Qu(BaseNovel):
     def parse_chapter_list(self, content):
         """解析章节列表"""
         soup = BeautifulSoup(content, "html.parser")
-        dt_items = soup.select("dt")
-        # 忽略最新章节
-        start_item = None
-        for dt_item in dt_items:
-            if "最新章节" in dt_item.string:
-                continue
-            start_item = dt_item
-            break
-
-        # 定位dd
-        if start_item is None:
-            chapter_items = soup.select("#list dd")
-        else:
-            chapter_items = start_item.find_next_siblings("dd") or []
+        chapter_items = soup.select("#list dd")
 
         # 章节列表
         index = 0
@@ -57,5 +46,5 @@ class Qu(BaseNovel):
         """解析章节内容"""
         soup = BeautifulSoup(content, "html.parser")
         item = soup.find(id="content")
-        lines = ["<p>　　%s</p>" % text for text in item.stripped_strings if text.strip() != "chaptererror();"]
+        lines = ["<p>　　%s</p>" % text for text in item.stripped_strings]
         return "\n".join(lines)

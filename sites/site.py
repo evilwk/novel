@@ -5,8 +5,10 @@ import shutil
 import string
 import subprocess
 import threading
-
+import sys
 import utils.base as base
+from utils.download import Downloader
+import time
 
 nav_point_temple = """        <navPoint id="{0}" playOrder="{1}">
             <navLabel>
@@ -41,9 +43,7 @@ class BaseNovel:
         self.novel_link = novel_link
 
         self.lock = threading.Lock()
-        self.futures = []
-        self.pool = concurrent.futures.ThreadPoolExecutor(
-            max_workers=max_thread)
+        self.downloader = Downloader(max_thread=max_thread, percent_func=self._show_percent)
 
     def __call__(self):
         # 解析基础信息
@@ -71,12 +71,15 @@ class BaseNovel:
             return
         print("%s 作者:%s 共%d章" % (self.name, self.author,
                                  len(self.chapter_list)))
+        self.download_complete = 0
+        self.download_count = len(self.chapter_list)
         for chapter in self.chapter_list:
-            self.futures.append(
-                self.pool.submit(self._download_chapter_content, chapter))
-        # 等待结束
-        concurrent.futures.wait(self.futures)
-        print(" " * 30, end='\r')
+            self.downloader.submit(self._download_chapter_content, chapter)
+
+        self.downloader.start()
+        self.downloader.wait()
+        print("")
+        print("《%s》下载完成" % self.name)
         self._make_epub()
         self._make_mobi()
 
@@ -158,24 +161,26 @@ class BaseNovel:
                 out_file.write(out_file_content)
 
     def _download_chapter_content(self, chapter):
-        content_page = base.get_html(chapter["link"], encode=self.encode)
-        novel_chapter = self.parse_chapter_content(chapter, content_page)
-        self._make_temple(
-            "content.html",
-            "chapter_%d.html" % chapter["index"],
-            chapter_title=chapter["title"],
-            chapter_content=novel_chapter)
-        self._show_percent()
+        chapter_file_name = "chapter_%d.html" % chapter["index"]
+        out_file_name = os.path.join(self.novel_dir, chapter_file_name)
+        if not os.path.exists(out_file_name):
+            content_page = base.get_html(chapter["link"], encode=self.encode)
+            novel_chapter = self.parse_chapter_content(chapter, content_page)
+            self._make_temple(
+                "content.html",
+                "chapter_%d.html" % chapter["index"],
+                chapter_title=chapter["title"],
+                chapter_content=novel_chapter)
 
     def _show_percent(self):
         with self.lock:
-            count = len(self.futures)
-            complete = len(
-                [future for future in self.futures if future.done()])
-            percent = complete * 1.0 / count * 100
-            sys.stdout.write('下载进度：%d/%d %.2f%%\r' % (complete, count,
-                                                      percent))
+            self.download_complete += 1
+            percent = self.download_complete * 1.0 / self.download_count * 100
+            done = int(self.download_complete / self.download_count * 20)
+            sys.stdout.write('下载进度：%d/%d %.2f%% [%s%s]\r' %
+                             (self.download_complete, self.download_count, percent, '█' * done, ' ' * (20 - done)))
             sys.stdout.flush()
+            time.sleep(0.01)
 
     @abc.abstractmethod
     def parse_base_info(self, content):
