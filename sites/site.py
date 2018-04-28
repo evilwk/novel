@@ -39,7 +39,7 @@ class BaseNovel:
 
     def __init__(self, novel_link, max_thread=10):
         self._novel_link = novel_link
-        self._downloader = Downloader(max_thread=max_thread)
+        self._downloader = Downloader(max_thread=max_thread, finish_func=self._download_finish)
 
     def __call__(self):
         # 解析基础信息
@@ -70,7 +70,8 @@ class BaseNovel:
             self._downloader.submit(self._download_chapter_content, chapter)
 
         self._downloader.start()
-        self._downloader.wait()
+
+    def _download_finish(self):
         print("")
         print("《%s》下载完成" % self._name)
         self._make_epub()

@@ -5,25 +5,33 @@ from bs4 import BeautifulSoup
 import utils.base as base
 from sites.site import BaseNovel
 
-__all__ = ["Qu"]
+__all__ = ["Booktxt"]
 
 
-class Qu(BaseNovel):
-    _source_site = "https://www.qu.la"
-    _source_title = "笔趣阁"
+class Booktxt(BaseNovel):
+    _encode = "gbk"
+
+    _source_site = "http://www.booktxt.net"
+    _source_title = "顶点小说"
 
     def parse_base_info(self, content):
         soup = BeautifulSoup(content, "html.parser")
-        item = soup.select("#fmimg > img")[0]
-        self._cover = urlparse.urljoin(self._novel_link, item["src"])
+        item = soup.select("#fmimg > script")[0]
+        img_script_url = urlparse.urljoin(self._novel_link, item["src"])
+        img_script = base.get_html(img_script_url)
+        self._cover = base.match(img_script, r"src=\'(.*?)\'")
 
         self._name = soup.find("h1").string.strip()
         self._read_link = self._novel_link
-        self._id = "qu:%s" % self._read_link[
-                             self._read_link.rfind("/", 0, -1) + 1:-1]
+        self._id = "booktxt:%s" % self._read_link[
+                                  self._read_link.rfind("/", 0, -1) + 1:-1]
 
-        self._author = base.match(content, r'<meta property="og:novel:author" content="(.*)"/>') or ""
-        self._subject = base.match(content, r'<meta property="og:novel:category" content="(.*)"/>') or ""
+        item = soup.find("div", id="info")
+        item_html = item.prettify()
+        self._author = base.match(item_html, "作    者：(.*)").strip()
+
+        item = soup.select(".con_top a")[2]
+        self._subject = item.string
 
     def parse_chapter_list(self, content):
         """解析章节列表"""
@@ -32,7 +40,7 @@ class Qu(BaseNovel):
         # 忽略最新章节
         start_item = None
         for dt_item in dt_items:
-            if "最新章节" in dt_item.string:
+            if "最新章节" in dt_item.prettify():
                 continue
             start_item = dt_item
             break

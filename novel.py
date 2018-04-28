@@ -5,7 +5,13 @@ from optparse import OptionParser
 import utils.base as base
 from sites import *
 
-config = {"txtjia.com": TxtJia, "qu.la": Qu, "biquge.com.tw": Biquge}
+config = {
+    "txtjia.com": TxtJia,
+    "qu.la": Qu,
+    "biquge.com.tw": Biquge,
+    "biqubook.com": Biqubook,
+    "booktxt.net": Booktxt
+}
 
 
 def parse_arg():
@@ -14,7 +20,14 @@ def parse_arg():
     return parser.parse_args()
 
 
+def wait_exit():
+    import msvcrt
+    if ord(msvcrt.getch()) in [68, 100]:
+        exit()
+
+
 def main():
+    print("提示：下载小说章节时，按 'D' 退出...")
     (options, urls) = parse_arg()
     for url in urls:
         domain = base.get_url_domain(url)
@@ -24,6 +37,8 @@ def main():
             else:
                 novel = config[domain](url)
             novel()
+
+    wait_exit()
 
 
 if __name__ == '__main__':
