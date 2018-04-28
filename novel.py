@@ -29,7 +29,9 @@ def wait_exit():
 def main():
     print("提示：下载小说章节时，按 'D' 退出...")
     (options, urls) = parse_arg()
-    for url in urls:
+    # download only
+    if len(urls) > 0:
+        url = urls[0]
         domain = base.get_url_domain(url)
         if domain in config.keys():
             if options.thread:
@@ -37,8 +39,7 @@ def main():
             else:
                 novel = config[domain](url)
             novel()
-
-    wait_exit()
+        wait_exit()
 
 
 if __name__ == '__main__':

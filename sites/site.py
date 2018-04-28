@@ -76,6 +76,7 @@ class BaseNovel:
         print("《%s》下载完成" % self._name)
         self._make_epub()
         self._make_mobi()
+        print("按 'Enter' 结束运行")
 
     def _make_epub(self):
         print("开始生成epub电子书...")
