@@ -1,9 +1,10 @@
-import abc
 import os
 import shutil
 import string
 import subprocess
 import time
+
+from bs4 import BeautifulSoup
 
 import utils.base as base
 from utils.download import Downloader
@@ -21,8 +22,6 @@ spine_item_temple = '    <itemref idref="{0}"/>'
 
 
 class BaseNovel:
-    __metaclass__ = abc.ABCMeta
-
     _encode = "utf-8"
 
     _id = ""
@@ -39,6 +38,7 @@ class BaseNovel:
 
     def __init__(self, novel_link, max_thread=10):
         self._novel_link = novel_link
+        self._line_fileters = self.content_line_fileters()
         self._downloader = Downloader(max_thread=max_thread, finish_func=self._download_finish)
 
     def __call__(self):
@@ -76,7 +76,6 @@ class BaseNovel:
         print("《%s》下载完成" % self._name)
         self._make_epub()
         self._make_mobi()
-        print("按 'Enter' 结束运行")
 
     def _make_epub(self):
         print("开始生成epub电子书...")
@@ -165,24 +164,47 @@ class BaseNovel:
         out_file_name = os.path.join(self._novel_dir, chapter_file_name)
         if not os.path.exists(out_file_name):
             content_page = base.get_html(chapter["link"], encode=self._encode)
-            novel_chapter = self.parse_chapter_content(chapter, content_page)
+            novel_chapter = self._parse_chapter_content(chapter, content_page)
             self._make_temple(
                 "content.html",
                 "chapter_%d.html" % chapter["index"],
                 chapter_title=chapter["title"],
                 chapter_content=novel_chapter)
 
-    @abc.abstractmethod
     def parse_base_info(self, content):
         """解析基础信息"""
         pass
 
-    @abc.abstractmethod
     def parse_chapter_list(self, content):
         """解析章节列表"""
         pass
 
-    @classmethod
-    def parse_chapter_content(self, chapter, content_page):
-        """解析章节内容"""
-        pass
+    def _parse_chapter_content(self, chapter, content_page):
+        soup = BeautifulSoup(content_page, "html.parser")
+        try:
+            item = soup.select(self.content_soup_select())[0]
+        except Exception as error:
+            print(chapter["link"], error)
+            return
+
+        lines = []
+        for line in item.stripped_strings:
+            strip_line = line.strip()
+            if strip_line == "" or self._fileter_line(strip_line):
+                continue
+            lines.append("<p>　　%s</p>" % strip_line)
+        return "\n".join(lines)
+
+    def _fileter_line(self, line):
+        for item in self._line_fileters:
+            if line in item:
+                return True
+        return False
+
+    @staticmethod
+    def content_line_fileters():
+        return []
+
+    @staticmethod
+    def content_soup_select():
+        return "#content"

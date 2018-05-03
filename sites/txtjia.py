@@ -2,6 +2,7 @@ import urllib.parse as urlparse
 
 from bs4 import BeautifulSoup
 
+import sites.biqu_parse as biqu
 import utils.base as base
 from sites.site import BaseNovel
 
@@ -30,21 +31,8 @@ class TxtJia(BaseNovel):
         self._subject = item.find("a").string
 
     def parse_chapter_list(self, content):
-        """解析章节列表"""
-        soup = BeautifulSoup(content, "html.parser")
-        chapter_items = soup.select(".list li a")
-        index = 0
-        for chapter_item in chapter_items:
-            self._chapter_list.append(
-                dict(
-                    index=index,
-                    link=urlparse.urljoin(self._read_link, chapter_item["href"]),
-                    title=chapter_item.string))
-            index += 1
+        biqu.parse_chapters(self, BeautifulSoup(content, "html.parser"), False, ".list li")
 
-    def parse_chapter_content(self, chapter, content):
-        """解析章节内容"""
-        soup = BeautifulSoup(content, "html.parser")
-        item = soup.find(id="booktext")
-        lines = ["<p>　　%s</p>" % text for text in item.stripped_strings]
-        return "\n".join(lines)
+    @staticmethod
+    def content_soup_select():
+        return "#booktext"

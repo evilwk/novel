@@ -1,8 +1,9 @@
 # coding:utf-8
 import re
-from tld import get_tld
+
 import requests
 from requests.adapters import HTTPAdapter
+from tld import get_tld
 
 
 def match(text, *patterns):
@@ -44,14 +45,22 @@ def download(url, file_name, headers={}):
         file.write(response.content)
 
 
-def get_url_domain(url):
-    """获取网址的域名"""
+def get_url_tld(url):
     if not url or url.strip() == '':
         return None
 
     res = get_tld(url, as_object=True)
     if res:
         return res.tld
+
+
+def get_url_domain(url):
+    if not url or url.strip() == '':
+        return None
+
+    res = get_tld(url, as_object=True)
+    if res:
+        return res.domain
 
 
 def make_zip(source_dir, output_filename):

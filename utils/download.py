@@ -1,6 +1,6 @@
 import queue
-import threading
 import sys
+import threading
 import time
 
 
@@ -29,6 +29,7 @@ class ThreadSafeCounter:
 
 
 default_progress_len = 20
+
 
 class Downloader:
     _queue = queue.Queue()

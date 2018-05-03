@@ -1,7 +1,6 @@
-import urllib.parse as urlparse
-
 from bs4 import BeautifulSoup
 
+import sites.biqu_parse as biqu
 import utils.base as base
 from sites.site import BaseNovel
 
@@ -16,15 +15,7 @@ class Booktxt(BaseNovel):
 
     def parse_base_info(self, content):
         soup = BeautifulSoup(content, "html.parser")
-        item = soup.select("#fmimg > script")[0]
-        img_script_url = urlparse.urljoin(self._novel_link, item["src"])
-        img_script = base.get_html(img_script_url)
-        self._cover = base.match(img_script, r"src=\'(.*?)\'")
-
-        self._name = soup.find("h1").string.strip()
-        self._read_link = self._novel_link
-        self._id = "booktxt:%s" % self._read_link[
-                                  self._read_link.rfind("/", 0, -1) + 1:-1]
+        biqu.parse_info(self, soup, content, script_img=True, author_from_meta=False)
 
         item = soup.find("div", id="info")
         item_html = item.prettify()
@@ -34,42 +25,4 @@ class Booktxt(BaseNovel):
         self._subject = item.string
 
     def parse_chapter_list(self, content):
-        """解析章节列表"""
-        soup = BeautifulSoup(content, "html.parser")
-        dt_items = soup.select("dt")
-        # 忽略最新章节
-        start_item = None
-        for dt_item in dt_items:
-            if "最新章节" in dt_item.prettify():
-                continue
-            start_item = dt_item
-            break
-
-        # 定位dd
-        if start_item is None:
-            chapter_items = soup.select("#list dd")
-        else:
-            chapter_items = start_item.find_next_siblings("dd") or []
-
-        # 章节列表
-        index = 0
-        for chapter_item in chapter_items:
-            self._chapter_list.append(
-                dict(
-                    index=index,
-                    link=urlparse.urljoin(self._read_link, chapter_item.a["href"]),
-                    title=chapter_item.a.string))
-            index += 1
-
-    def parse_chapter_content(self, chapter, content):
-        """解析章节内容"""
-        soup = BeautifulSoup(content, "html.parser")
-        item = soup.find(id="content")
-        lines = []
-        for line in item.stripped_strings:
-            if line.strip() == 'chaptererror();':
-                continue
-            if '<!--divstyle="color:#f00">' in line:
-                continue
-            lines.append("<p>　　%s</p>" % line)
-        return "\n".join(lines)
+        biqu.parse_chapters(self, BeautifulSoup(content, "html.parser"), True, "#list")

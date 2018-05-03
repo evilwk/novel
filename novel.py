@@ -22,17 +22,18 @@ def parse_arg():
 
 def wait_exit():
     import msvcrt
-    if ord(msvcrt.getch()) in [68, 100]:
-        exit()
+    msvcrt.getch()
+    exit()
 
 
 def main():
-    print("提示：下载小说章节时，按 'D' 退出...")
+    print("提示：按任意键结束运行\n")
+
     (options, urls) = parse_arg()
     # download only
     if len(urls) > 0:
         url = urls[0]
-        domain = base.get_url_domain(url)
+        domain = base.get_url_tld(url)
         if domain in config.keys():
             if options.thread:
                 novel = config[domain](url, max_thread=options.thread)
