@@ -7,8 +7,8 @@ __all__ = ["Qu"]
 
 
 class Qu(BaseNovel):
-    _source_site = "https://www.qu.la"
-    _source_title = "笔趣阁"
+    source_site = "https://www.qu.la"
+    source_title = "笔趣阁"
 
     def parse_base_info(self, content):
         biqu.parse_info(self, BeautifulSoup(content, "html.parser"), content)
@@ -17,5 +17,5 @@ class Qu(BaseNovel):
         biqu.parse_chapters(self, BeautifulSoup(content, "html.parser"), True, "#list")
 
     @staticmethod
-    def content_line_fileters():
+    def chapter_line_filters():
         return ['chaptererror();', '<!--divstyle="color:#f00">']

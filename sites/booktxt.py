@@ -10,8 +10,8 @@ __all__ = ["Booktxt"]
 class Booktxt(BaseNovel):
     _encode = "gbk"
 
-    _source_site = "http://www.booktxt.net"
-    _source_title = "顶点小说"
+    source_site = "http://www.booktxt.net"
+    source_title = "顶点小说"
 
     def parse_base_info(self, content):
         soup = BeautifulSoup(content, "html.parser")
@@ -19,10 +19,10 @@ class Booktxt(BaseNovel):
 
         item = soup.find("div", id="info")
         item_html = item.prettify()
-        self._author = base.match(item_html, "作    者：(.*)").strip()
+        self.author = base.match(item_html, "作    者：(.*)").strip()
 
         item = soup.select(".con_top a")[2]
-        self._subject = item.string
+        self.subject = item.string
 
     def parse_chapter_list(self, content):
         biqu.parse_chapters(self, BeautifulSoup(content, "html.parser"), True, "#list")

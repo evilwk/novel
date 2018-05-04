@@ -28,7 +28,7 @@ class ThreadSafeCounter:
             self._value = v
 
 
-default_progress_len = 20
+DEFAULT_PROGRESS_LEN = 20
 
 
 class Downloader:
@@ -82,8 +82,8 @@ class Downloader:
         with self._lock:
             value = self._download_complete.value
             percent = value * 1.0 / self._download_count * 100
-            done = int(value / self._download_count * default_progress_len)
+            done = int(value / self._download_count * DEFAULT_PROGRESS_LEN)
             sys.stdout.write('%d/%d %.2f%% [%s%s]\r' %
-                             (value, self._download_count, percent, '#' * done, '.' * (default_progress_len - done)))
+                             (value, self._download_count, percent, '#' * done, '.' * (DEFAULT_PROGRESS_LEN - done)))
             sys.stdout.flush()
             time.sleep(0.01)

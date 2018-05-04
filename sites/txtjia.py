@@ -12,27 +12,27 @@ __all__ = ["TxtJia"]
 class TxtJia(BaseNovel):
     _encode = "gbk"
 
-    _source_site = "https://www.txtjia.com"
-    _source_title = "TXT之家"
+    source_site = "https://www.txtjia.com"
+    source_title = "TXT之家"
 
     def parse_base_info(self, content):
         soup = BeautifulSoup(content, "html.parser")
-        self._cover = soup.find("img", id="BookImage")["src"]
+        self.cover = soup.find("img", id="BookImage")["src"]
 
-        self._name = soup.find("h2").string.strip()
+        self.name = soup.find("h2").string.strip()
         item = soup.find("a", class_="readnow")
-        self._read_link = urlparse.urljoin(self._novel_link, item["href"])
-        self._id = "txtjia:%s" % self._read_link[
-                                 self._read_link.rfind("/", 0, -1) + 1:-1]
+        self.read_link = urlparse.urljoin(self.novel_link, item["href"])
+        self.id = "txtjia:%s" % self.read_link[
+                                 self.read_link.rfind("/", 0, -1) + 1:-1]
 
         item = soup.find("p", class_="intr")
         item_html = item.prettify()
-        self._author = base.match(item_html, "作者：(.*)").strip()
-        self._subject = item.find("a").string
+        self.author = base.match(item_html, "作者：(.*)").strip()
+        self.subject = item.find("a").string
 
     def parse_chapter_list(self, content):
         biqu.parse_chapters(self, BeautifulSoup(content, "html.parser"), False, ".list li")
 
     @staticmethod
-    def content_soup_select():
+    def chapter_soup_select():
         return "#booktext"

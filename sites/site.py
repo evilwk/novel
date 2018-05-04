@@ -24,56 +24,56 @@ spine_item_temple = '    <itemref idref="{0}"/>'
 class BaseNovel:
     _encode = "utf-8"
 
-    _id = ""
-    _name = ""
-    _cover = ""  # 封面
-    _author = ""
-    _subject = ""  # 分类
+    id = ""
+    name = ""
+    cover = ""  # 封面
+    author = "Unkown"
+    subject = "Unkown"  # 分类
 
-    _source_title = ""  # 网站标题
-    _source_site = ""  # 网站地址
+    source_title = ""  # 网站标题
+    source_site = ""  # 网站地址
 
-    _read_link = ""  # 阅读页链接
-    _chapter_list = []  # 章节列表 {link: "", title: ""}
+    read_link = ""  # 阅读页链接
+    chapter_list = []  # 章节列表 {link: "", title: ""}
 
     def __init__(self, novel_link, max_thread=10):
-        self._novel_link = novel_link
-        self._line_fileters = self.content_line_fileters()
+        self.novel_link = novel_link
+        self._chapter_line_filters = self.chapter_line_filters()
         self._downloader = Downloader(max_thread=max_thread, finish_func=self._download_finish)
 
     def __call__(self):
         # 解析基础信息
-        intro_page = base.get_html(self._novel_link, encode=self._encode)
+        intro_page = base.get_html(self.novel_link, encode=self._encode)
         self.parse_base_info(intro_page)
         # 创建目录
-        self._novel_dir = os.path.join("./novel", self._name)
+        self._novel_dir = os.path.join("./novel", self.name)
         if not os.path.exists(self._novel_dir):
             os.makedirs(os.path.join(self._novel_dir, "META-INF"))
 
         # 解析章节列表
-        if self._read_link is None or self._read_link == '':
+        if self.read_link is None or self.read_link == '':
             print("没有小说目录页面")
             return
 
-        if self._read_link == self._novel_link:
+        if self.read_link == self.novel_link:
             self.parse_chapter_list(intro_page)
         else:
-            read_page = base.get_html(self._read_link, encode=self._encode)
+            read_page = base.get_html(self.read_link, encode=self._encode)
             self.parse_chapter_list(read_page)
 
-        if not self._chapter_list:
+        if not self.chapter_list:
             print("章节列表为空")
             return
-        print("%s 作者:%s 共%d章" % (self._name, self._author,
-                                 len(self._chapter_list)))
-        for chapter in self._chapter_list:
+        print("%s 作者:%s 共%d章" % (self.name, self.author,
+                                 len(self.chapter_list)))
+        for chapter in self.chapter_list:
             self._downloader.submit(self._download_chapter_content, chapter)
 
         self._downloader.start()
 
     def _download_finish(self):
         print("")
-        print("《%s》下载完成" % self._name)
+        print("《%s》下载完成" % self.name)
         self._make_epub()
         self._make_mobi()
 
@@ -87,7 +87,7 @@ class BaseNovel:
 
         index = 1
         nav_index = 2
-        for chapter in self._chapter_list:
+        for chapter in self.chapter_list:
             file_id = "chapter_%d" % chapter["index"]
             manifest.append(manifest_item_temple.format(file_id))
             spine.append(spine_item_temple.format(file_id))
@@ -96,28 +96,28 @@ class BaseNovel:
             nav_index += 1
 
         self._make_temple("content.opf",
-                          title=self._name,
-                          bookid=self._id,
-                          author=self._author,
+                          title=self.name,
+                          bookid=self.id,
+                          author=self.author,
                           create_time=self._get_time(),
-                          source_title=self._source_title,
-                          source_site=self._source_site,
-                          book_subject=self._subject,
+                          source_title=self.source_title,
+                          source_site=self.source_site,
+                          book_subject=self.subject,
                           manifest_item="\n".join(manifest),
                           spine_item="\n".join(spine))
         self._make_temple("toc.ncx",
-                          bookid=self._id, nav_point='\n'.join(nav))
+                          bookid=self.id, nav_point='\n'.join(nav))
         self._make_temple("title.xhtml",
-                          book_link=self._novel_link,
-                          book_title=self._name,
-                          source_title=self._source_title,
-                          source_site=self._source_site,
-                          book_subject=self._subject)
+                          book_link=self.novel_link,
+                          book_title=self.name,
+                          source_title=self.source_title,
+                          source_site=self.source_site,
+                          book_subject=self.subject)
 
         self._copy_file('mimetype', 'stylesheet.css', "META-INF/container.xml")
-        base.download(self._cover, os.path.join(self._novel_dir, "cover.jpg"))
+        base.download(self.cover, os.path.join(self._novel_dir, "cover.jpg"))
 
-        epub_file_name = "./novel/%s.epub" % self._name
+        epub_file_name = "./novel/%s.epub" % self.name
         base.make_zip(self._novel_dir, epub_file_name)
         print(os.path.abspath(epub_file_name))
 
@@ -126,8 +126,8 @@ class BaseNovel:
         return time.asctime(time.localtime(time.time()))
 
     def _make_mobi(self):
-        epub_file_name = "./novel/%s.epub" % self._name
-        mobi_file_name = "./novel/%s.mobi" % self._name
+        epub_file_name = "./novel/%s.epub" % self.name
+        mobi_file_name = "./novel/%s.mobi" % self.name
         tool_file = './tool/kindlegen.exe'
         if not os.path.exists(epub_file_name):
             return
@@ -182,7 +182,7 @@ class BaseNovel:
     def _parse_chapter_content(self, chapter, content_page):
         soup = BeautifulSoup(content_page, "html.parser")
         try:
-            item = soup.select(self.content_soup_select())[0]
+            item = soup.select(self.chapter_soup_select())[0]
         except Exception as error:
             print(chapter["link"], error)
             return
@@ -190,21 +190,21 @@ class BaseNovel:
         lines = []
         for line in item.stripped_strings:
             strip_line = line.strip()
-            if strip_line == "" or self._fileter_line(strip_line):
+            if strip_line == "" or self._filter_line(strip_line):
                 continue
             lines.append("<p>　　%s</p>" % strip_line)
         return "\n".join(lines)
 
-    def _fileter_line(self, line):
-        for item in self._line_fileters:
+    def _filter_line(self, line):
+        for item in self._chapter_line_filters:
             if line in item:
                 return True
         return False
 
     @staticmethod
-    def content_line_fileters():
+    def chapter_line_filters():
         return []
 
     @staticmethod
-    def content_soup_select():
+    def chapter_soup_select():
         return "#content"
