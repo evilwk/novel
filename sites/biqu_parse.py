@@ -13,7 +13,7 @@ def parse_info(novel, soup, content, script_img=False, author_from_meta=True):
             novel.cover = base.match(img_script, r"src=\'(.*?)\'")
         else:
             item = soup.select("#fmimg > img")[0]
-            novel.cover = urlparse.urljoin(novel._novel_link, item["src"])
+            novel.cover = urlparse.urljoin(novel.novel_link, item["src"])
     except Exception as error:
         print(error)
         return
