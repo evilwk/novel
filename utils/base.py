@@ -73,3 +73,22 @@ def make_zip(source_dir, output_filename):
                 file_path = os.path.join(parent, filename)
                 arc_name = file_path.replace(source_dir, "").strip(os.path.sep)
                 zip_file.write(file_path, arc_name)
+
+
+def is_MacOS():
+    import platform
+    return platform.system() == "Darwin"
+
+
+def get_usable_cmd():
+    import subprocess
+    try:
+        p = subprocess.Popen(
+            ['kindlegen'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        version = match(out.decode('utf-8'), r"V(\d.\d)\sbuild")
+        if version:
+            return True
+    except Exception as error:
+        pass
+    return False

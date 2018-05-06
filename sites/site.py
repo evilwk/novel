@@ -39,7 +39,8 @@ class BaseNovel:
     def __init__(self, novel_link, max_thread=10):
         self.novel_link = novel_link
         self._chapter_line_filters = self.chapter_line_filters()
-        self._downloader = Downloader(max_thread=max_thread, finish_func=self._download_finish)
+        self._downloader = Downloader(
+            max_thread=max_thread, finish_func=self._download_finish)
 
     def __call__(self):
         # 解析基础信息
@@ -91,28 +92,30 @@ class BaseNovel:
             file_id = "chapter_%d" % chapter["index"]
             manifest.append(manifest_item_temple.format(file_id))
             spine.append(spine_item_temple.format(file_id))
-            nav.append(nav_point_temple.format(file_id, nav_index, chapter["title"]))
+            nav.append(
+                nav_point_temple.format(file_id, nav_index, chapter["title"]))
             index += 1
             nav_index += 1
 
-        self._make_temple("content.opf",
-                          title=self.name,
-                          bookid=self.id,
-                          author=self.author,
-                          create_time=self._get_time(),
-                          source_title=self.source_title,
-                          source_site=self.source_site,
-                          book_subject=self.subject,
-                          manifest_item="\n".join(manifest),
-                          spine_item="\n".join(spine))
-        self._make_temple("toc.ncx",
-                          bookid=self.id, nav_point='\n'.join(nav))
-        self._make_temple("title.xhtml",
-                          book_link=self.novel_link,
-                          book_title=self.name,
-                          source_title=self.source_title,
-                          source_site=self.source_site,
-                          book_subject=self.subject)
+        self._make_temple(
+            "content.opf",
+            title=self.name,
+            bookid=self.id,
+            author=self.author,
+            create_time=self._get_time(),
+            source_title=self.source_title,
+            source_site=self.source_site,
+            book_subject=self.subject,
+            manifest_item="\n".join(manifest),
+            spine_item="\n".join(spine))
+        self._make_temple("toc.ncx", bookid=self.id, nav_point='\n'.join(nav))
+        self._make_temple(
+            "title.xhtml",
+            book_link=self.novel_link,
+            book_title=self.name,
+            source_title=self.source_title,
+            source_site=self.source_site,
+            book_subject=self.subject)
 
         self._copy_file('mimetype', 'stylesheet.css', "META-INF/container.xml")
         base.download(self.cover, os.path.join(self._novel_dir, "cover.jpg"))
@@ -127,21 +130,27 @@ class BaseNovel:
 
     def _make_mobi(self):
         epub_file_name = "./novel/%s.epub" % self.name
-        mobi_file_name = "./novel/%s.mobi" % self.name
-        tool_file = './tool/kindlegen.exe'
+        tool_file = os.path.abspath('./tool/kindlegen.exe')
         if not os.path.exists(epub_file_name):
             return
-        if not os.path.exists(tool_file):
+
+        if base.is_MacOS():
+            if base.get_usable_cmd():
+                tool_file = "kindlegen"
+            else:
+                print("使用brew安装kindlegen")
+                return
+        elif not os.path.exists(tool_file):
             return
 
         print("开始生成Mobi电子书...")
         try:
             pipe = subprocess.Popen(
-                [os.path.abspath(tool_file), epub_file_name],
+                [tool_file, epub_file_name],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
             pipe.communicate()
-            print(os.path.abspath(mobi_file_name))
+            print(os.path.abspath("./novel/%s.mobi" % self.name))
         except Exception as error:
             print(error)
 
@@ -153,10 +162,15 @@ class BaseNovel:
     def _make_temple(self, in_file_name, out_file_name=None, **temple_args):
         if not out_file_name:
             out_file_name = in_file_name
-        with open("./epub_temple/%s" % in_file_name, encoding="utf-8") as in_file:
+        with open(
+                "./epub_temple/%s" % in_file_name,
+                encoding="utf-8") as in_file:
             temple = in_file.read()
             out_file_content = string.Template(temple).substitute(temple_args)
-            with open(os.path.join(self._novel_dir, out_file_name), "w+", encoding="utf-8") as out_file:
+            with open(
+                    os.path.join(self._novel_dir, out_file_name),
+                    "w+",
+                    encoding="utf-8") as out_file:
                 out_file.write(out_file_content)
 
     def _download_chapter_content(self, chapter):
@@ -197,7 +211,7 @@ class BaseNovel:
 
     def _filter_line(self, line):
         for item in self._chapter_line_filters:
-            if line in item:
+            if item in line:
                 return True
         return False
 

@@ -1,7 +1,6 @@
 # coding:utf-8
 
 from optparse import OptionParser
-
 import utils.base as base
 from sites import *
 
@@ -16,23 +15,14 @@ config = {
 
 def parse_arg():
     parser = OptionParser()
-    parser.add_option("-t", "--thread", dest="thread", type="int", help="set thread count")
+    parser.add_option(
+        "-t", "--thread", dest="thread", type="int", help="set thread count")
     return parser.parse_args()
 
 
-def wait_exit():
-    import msvcrt
-    msvcrt.getch()
-    exit()
-
-
 def main():
-    print("提示：按任意键结束运行\n")
-
     (options, urls) = parse_arg()
-    # download only
-    if len(urls) > 0:
-        url = urls[0]
+    for url in urls:
         domain = base.get_url_tld(url)
         if domain in config.keys():
             if options.thread:
@@ -40,7 +30,8 @@ def main():
             else:
                 novel = config[domain](url)
             novel()
-        wait_exit()
+        else:
+            print("don't support %s" % url)
 
 
 if __name__ == '__main__':
