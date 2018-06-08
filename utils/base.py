@@ -1,5 +1,7 @@
 # coding:utf-8
+import os
 import re
+import subprocess
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -81,7 +83,6 @@ def is_MacOS():
 
 
 def get_usable_cmd():
-    import subprocess
     try:
         p = subprocess.Popen(
             ['kindlegen'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -92,3 +93,28 @@ def get_usable_cmd():
     except Exception as error:
         pass
     return False
+
+
+def make_mobi(epub_file_name):
+    tool_file = os.path.abspath('./tool/kindlegen.exe')
+    if not os.path.exists(epub_file_name):
+        return
+
+    if is_MacOS():
+        if get_usable_cmd():
+            tool_file = "kindlegen"
+        else:
+            print("使用brew安装kindlegen")
+            return
+    elif not os.path.exists(tool_file):
+        return
+
+    print("开始生成Mobi电子书...")
+    try:
+        pipe = subprocess.Popen(
+            [tool_file, epub_file_name],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+        pipe.communicate()
+    except Exception as error:
+        print(error)
