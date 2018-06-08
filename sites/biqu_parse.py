@@ -38,11 +38,11 @@ def parse_chapters(novel, soup, multi_segment, soup_select):
         # 章节列表
         index = 0
         for chapter_item in chapter_items:
-            novel.chapter_list.append(
-                dict(
-                    index=index,
-                    link=urlparse.urljoin(novel.read_link, chapter_item.a["href"]),
-                    title=chapter_item.a.string))
+            novel.chapter_list.append({
+                'index': index,
+                'link': urlparse.urljoin(novel.read_link, chapter_item.a["href"]),
+                'title': chapter_item.a.string
+            })
             index += 1
 
 
@@ -53,7 +53,7 @@ def _parse_multi_segment(novel, soup, soup_select):
     # 忽略最新章节
     start_item = None
     for dt_item in dt_items:
-        if "最新章节" in dt_item.string:
+        if "最新章节" in dt_item.get_text():
             continue
         start_item = dt_item
         break
@@ -67,9 +67,9 @@ def _parse_multi_segment(novel, soup, soup_select):
     # 章节列表
     index = 0
     for chapter_item in chapter_items:
-        novel.chapter_list.append(
-            dict(
-                index=index,
-                link=urlparse.urljoin(novel.read_link, chapter_item.a["href"]),
-                title=chapter_item.a.string))
+        novel.chapter_list.append({
+            'index': index,
+            'link': urlparse.urljoin(novel.read_link, chapter_item.a["href"]),
+            'title': chapter_item.a.string
+        })
         index += 1
