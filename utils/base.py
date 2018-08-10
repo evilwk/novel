@@ -112,7 +112,7 @@ def make_mobi(epub_file_name):
     print("开始生成Mobi电子书...")
     try:
         pipe = subprocess.Popen(
-            [tool_file, epub_file_name, " -dont_append_source"],
+            [tool_file, epub_file_name, "-dont_append_source"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
         pipe.communicate()
