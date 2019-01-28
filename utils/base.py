@@ -5,28 +5,29 @@ import subprocess
 
 import requests
 from requests.adapters import HTTPAdapter
-from tld import get_tld
 
 
 def match(text, *patterns):
     """匹配正则表达式的第一个结果"""
     if len(patterns) == 1:
         pattern = patterns[0]
-        match = re.search(pattern, text)
-        if match:
-            return match.group(1)
+        m = re.search(pattern, text)
+        if m:
+            return m.group(1)
         else:
             return None
     else:
         ret = []
         for pattern in patterns:
-            match = re.search(pattern, text)
-            if match:
-                ret.append(match.group(1))
+            m = re.search(pattern, text)
+            if m:
+                ret.append(m.group(1))
         return ret
 
 
-def get_html(url, headers={}, encode=None):
+def get_html(url, headers=None, encode=None):
+    if headers is None:
+        headers = {}
     session = requests.Session()
     session.mount('http://', HTTPAdapter(max_retries=3))
     session.mount('https://', HTTPAdapter(max_retries=3))
@@ -37,7 +38,9 @@ def get_html(url, headers={}, encode=None):
     return response.text
 
 
-def download(url, file_name, headers={}):
+def download(url, file_name, headers=None):
+    if headers is None:
+        headers = {}
     session = requests.Session()
     session.mount('http://', HTTPAdapter(max_retries=3))
     session.mount('https://', HTTPAdapter(max_retries=3))
@@ -47,26 +50,9 @@ def download(url, file_name, headers={}):
         file.write(response.content)
 
 
-def get_url_tld(url):
-    if not url or url.strip() == '':
-        return None
-
-    res = get_tld(url, as_object=True)
-    if res:
-        return res.tld
-
-
-def get_url_domain(url):
-    if not url or url.strip() == '':
-        return None
-
-    res = get_tld(url, as_object=True)
-    if res:
-        return res.domain
-
-
 def make_zip(source_dir, output_filename):
-    import os, zipfile
+    import os
+    import zipfile
     if not os.path.isabs(source_dir):
         source_dir = os.path.abspath(source_dir)
     with zipfile.ZipFile(output_filename, 'w') as zip_file:
@@ -77,7 +63,7 @@ def make_zip(source_dir, output_filename):
                 zip_file.write(file_path, arc_name)
 
 
-def is_MacOS():
+def is_mac_os():
     import platform
     return platform.system() == "Darwin"
 
@@ -100,7 +86,7 @@ def make_mobi(epub_file_name):
     if not os.path.exists(epub_file_name):
         return
 
-    if is_MacOS():
+    if is_mac_os():
         if get_usable_cmd():
             tool_file = "kindlegen"
         else:

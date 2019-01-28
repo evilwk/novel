@@ -12,16 +12,15 @@ def parse_info(novel, soup, content, script_img=False, author_from_meta=True):
             img_script = base.get_html(img_script_url)
             novel.cover = base.match(img_script, r"src=\'(.*?)\'")
         else:
-            item = soup.select("#fmimg > img")[0]
+            item = soup.select(".info img")[0]
             novel.cover = urlparse.urljoin(novel.novel_link, item["src"])
     except Exception as error:
         print(error)
         return
 
-    novel.name = soup.find("h1").string.strip()
+    novel.name = soup.find("h2").string.strip()
     novel.read_link = novel.novel_link
-    novel.id = "%s:%s" % (base.get_url_domain(novel.source_site), novel.read_link[
-                                                                    novel.read_link.rfind("/", 0, -1) + 1:-1])
+    novel.id = novel.read_link[novel.read_link.rfind("/", 0, -1) + 1:-1]
 
     if author_from_meta:
         novel.author = base.match(content, r'<meta property="og:novel:author" content="(.*)"/>') or ""

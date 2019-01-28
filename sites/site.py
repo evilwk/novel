@@ -84,6 +84,9 @@ class BaseNovel:
         """解析章节列表"""
         pass
 
+    def chapter_soup_select():
+        pass
+
     def _parse_chapter_content(self, chapter, content_page):
         soup = BeautifulSoup(content_page, "html.parser")
         try:
@@ -109,7 +112,3 @@ class BaseNovel:
     @staticmethod
     def chapter_line_filters():
         return []
-
-    @staticmethod
-    def chapter_soup_select():
-        return "#content"

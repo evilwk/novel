@@ -1,15 +1,15 @@
 # coding:utf-8
 
+import urllib.parse
 from optparse import OptionParser
-import utils.base as base
+
 from sites import *
 
 config = {
-    "txtjia.com": TxtJia,
-    "qu.la": Qu,
-    "biquge.com.tw": Biquge,
-    "biqubook.com": Biqubook,
-    "booktxt.net": Booktxt
+    "www.qu.la": Qu,
+    "www.biquyun.com": Biquyun,
+    "www.biqubook.com": Biqubook,
+    "www.booktxt.net": Booktxt
 }
 
 
@@ -23,12 +23,12 @@ def parse_arg():
 def main():
     (options, urls) = parse_arg()
     for url in urls:
-        domain = base.get_url_tld(url)
-        if domain in config.keys():
+        hostname = urllib.parse.urlparse(url).hostname
+        if hostname and (hostname in config.keys()):
             if options.thread:
-                novel = config[domain](url, max_thread=options.thread)
+                novel = config[hostname](url, max_thread=options.thread)
             else:
-                novel = config[domain](url)
+                novel = config[hostname](url)
             novel()
         else:
             print("don't support %s" % url)
