@@ -52,7 +52,8 @@ class Downloader:
         self._download_count += 1
         self._queue.put((func, arg))
 
-    def has_live_threads(self, threads):
+    @staticmethod
+    def has_live_threads(threads):
         return True in [t.is_alive() for t in threads]
 
     def start(self):

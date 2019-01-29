@@ -41,6 +41,10 @@ def get_html(url, headers=None, encode=None):
 def download(url, file_name, headers=None):
     if headers is None:
         headers = {}
+
+    headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" \
+                            " Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134"
+
     session = requests.Session()
     session.mount('http://', HTTPAdapter(max_retries=3))
     session.mount('https://', HTTPAdapter(max_retries=3))

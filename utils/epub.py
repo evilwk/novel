@@ -1,6 +1,7 @@
 import os
 import string
 import time
+import utils
 
 template_container = """<?xml version="1.0"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
@@ -114,7 +115,8 @@ def get_time():
 
 
 def make_zip(source_dir, output_filename):
-    import os, zipfile
+    import os
+    import zipfile
     if not os.path.isabs(source_dir):
         source_dir = os.path.abspath(source_dir)
     with zipfile.ZipFile(output_filename, 'w') as zip_file:
@@ -123,13 +125,6 @@ def make_zip(source_dir, output_filename):
                 file_path = os.path.join(parent, filename)
                 arc_name = file_path.replace(source_dir, "").strip(os.path.sep)
                 zip_file.write(file_path, arc_name)
-
-
-def download_file(url, file_name):
-    import urllib.request
-    response = urllib.request.urlopen(url)
-    with open(file_name, "wb+") as file:
-        file.write(response.read())
 
 
 class EPub:
@@ -190,7 +185,7 @@ class EPub:
         self._write_template(template_stylesheet, 'stylesheet.css')
         self._write_template(template_container, 'META-INF/container.xml')
 
-        download_file(info['cover'], os.path.join(self._save_dir, "cover.jpg"))
+        utils.download(info['cover'], os.path.join(self._save_dir, "cover.jpg"))
         epub_file_name = "./epub/%s.epub" % self.name
         make_zip(self._save_dir, epub_file_name)
         return epub_file_name

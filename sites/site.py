@@ -2,9 +2,7 @@ import os
 
 from bs4 import BeautifulSoup
 
-import utils.base as base
-from utils.download import Downloader
-from utils.epub import EPub
+import utils
 
 
 class BaseNovel:
@@ -25,14 +23,14 @@ class BaseNovel:
     def __init__(self, novel_link, max_thread=10):
         self.novel_link = novel_link
         self._chapter_line_filters = self.chapter_line_filters()
-        self._downloader = Downloader(
+        self._downloader = utils.Downloader(
             max_thread=max_thread, finish_func=self._download_finish)
 
     def __call__(self):
         # 解析基础信息
-        intro_page = base.get_html(self.novel_link, encode=self._encode)
+        intro_page = utils.get_html(self.novel_link, encode=self._encode)
         self.parse_base_info(intro_page)
-        self.epub = EPub(self.name, self.source_title, self.source_site)
+        self.epub = utils.EPub(self.name, self.source_title, self.source_site)
 
         # 解析章节列表
         if self.read_link is None or self.read_link == '':
@@ -67,12 +65,12 @@ class BaseNovel:
         }
         epub_file_name = self.epub.make(info)
         print(os.path.abspath(epub_file_name))
-        base.make_mobi(epub_file_name)
+        utils.make_mobi(epub_file_name)
 
     def _download_chapter_content(self, chapter):
         chapter_file_name = self.epub.chapter_file_name(chapter["title"])
         if not self.epub.exists(chapter_file_name):
-            content_page = base.get_html(chapter["link"], encode=self._encode)
+            content_page = utils.get_html(chapter["link"], encode=self._encode)
             novel_chapter = self._parse_chapter_content(chapter, content_page)
             self.epub.chapter(chapter_file_name, chapter["title"], novel_chapter)
 
@@ -84,7 +82,9 @@ class BaseNovel:
         """解析章节列表"""
         pass
 
+    @staticmethod
     def chapter_soup_select():
+        """章节内容选择器"""
         pass
 
     def _parse_chapter_content(self, chapter, content_page):

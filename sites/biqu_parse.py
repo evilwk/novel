@@ -1,34 +1,24 @@
 import urllib.parse as urlparse
 
-import utils.base as base
+from bs4 import BeautifulSoup
+
+import utils
 
 
-def parse_info(novel, soup, content, script_img=False, author_from_meta=True):
-    """解析小说基础信息，author和subject如果不能从meta从匹配，需要再额外处理"""
-    try:
-        if script_img:
-            item = soup.select("#fmimg > script")[0]
-            img_script_url = urlparse.urljoin(novel.novel_link, item["src"])
-            img_script = base.get_html(img_script_url)
-            novel.cover = base.match(img_script, r"src=\'(.*?)\'")
-        else:
-            item = soup.select(".info img")[0]
-            novel.cover = urlparse.urljoin(novel.novel_link, item["src"])
-    except Exception as error:
-        print(error)
-        return
-
-    novel.name = soup.find("h2").string.strip()
-    novel.read_link = novel.novel_link
+def info_from_meta(novel, content):
     novel.id = novel.read_link[novel.read_link.rfind("/", 0, -1) + 1:-1]
+    novel.read_link = novel.novel_link
 
-    if author_from_meta:
-        novel.author = base.match(content, r'<meta property="og:novel:author" content="(.*)"/>') or ""
-        novel.subject = base.match(content, r'<meta property="og:novel:category" content="(.*)"/>') or ""
+    novel.name = utils.match(content, r'<meta\s+property="og:novel:book_name"\s+content="(.*)"\s*/>') or ""
+    novel.cover = utils.match(content, r'<meta\s+property="og:image"\s+content="(.*)"\s*/>') or ""
+    novel.author = utils.match(content, r'<meta\s+property="og:novel:author"\s+content="(.*)"\s*/>') or ""
+    novel.subject = utils.match(content, r'<meta\s+property="og:novel:category"\s+content="(.*)"\s*/>') or ""
 
 
-def parse_chapters(novel, soup, multi_segment, soup_select):
+def parse_chapters(novel, soup_select, soup=None, content=None, multi_segment=False):
     """解析章节列表"""
+    if not soup:
+        soup = BeautifulSoup(content, "html.parser")
     if multi_segment:
         _parse_multi_segment(novel, soup, soup_select)
     else:
