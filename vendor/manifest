@@ -1,0 +1,38 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/PuerkitoBio/goquery",
+			"repository": "https://github.com/PuerkitoBio/goquery",
+			"revision": "2d2796f41742ece03e8086188fa4db16a3a0b458",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/andybalholm/cascadia",
+			"repository": "https://github.com/andybalholm/cascadia",
+			"revision": "680b6a57bda4f657485ad44bdea42342ead737bc",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/golang/net/html",
+			"repository": "https://github.com/golang/net",
+			"revision": "adae6a3d119ae4890b46832a2e88a95adc62b8e7",
+			"branch": "master",
+			"path": "/html"
+		},
+		{
+			"importpath": "github.com/golang/text/encoding",
+			"repository": "https://github.com/golang/text",
+			"revision": "6f44c5a2ea40ee3593d98cdcc905cc1fdaa660e2",
+			"branch": "master",
+			"path": "/encoding"
+		},
+		{
+			"importpath": "github.com/golang/text/transform",
+			"repository": "https://github.com/golang/text",
+			"revision": "6f44c5a2ea40ee3593d98cdcc905cc1fdaa660e2",
+			"branch": "master",
+			"path": "/transform"
+		}
+	]
+}
