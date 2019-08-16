@@ -1,1 +1,0 @@
-<attachment contenteditable="false" data-atts="%5B%5D" data-aid=".atts-f17487f8-fd5b-40ec-9f62-142a4bf6a64d"></attachment><p>beautifulsoup4==4.7.1 requests==2.21.0</p><p><br></p>
