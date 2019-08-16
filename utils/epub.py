@@ -1,7 +1,7 @@
 import os
 import string
 import time
-import utils
+from .utils import *
 
 template_container = """<?xml version="1.0"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
@@ -185,7 +185,7 @@ class EPub:
         self._write_template(template_stylesheet, 'stylesheet.css')
         self._write_template(template_container, 'META-INF/container.xml')
 
-        utils.download(info['cover'], os.path.join(self._save_dir, "cover.jpg"))
+        download(info['cover'], os.path.join(self._save_dir, "cover.jpg"))
         epub_file_name = "./epub/%s.epub" % self.name
         make_zip(self._save_dir, epub_file_name)
         return epub_file_name

@@ -1,5 +1,5 @@
 import sites.biqu_parse as biqu
-from sites.site import BaseNovel
+from .site import *
 
 __all__ = ["Qu"]
 

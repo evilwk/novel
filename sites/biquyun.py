@@ -1,11 +1,11 @@
 import sites.biqu_parse as biqu
-from sites.site import BaseNovel
+from .site import *
 
 __all__ = ["Biquyun"]
 
 
 class Biquyun(BaseNovel):
-    _encode = "gbk"
+    _encoding = "gbk"
 
     source_site = "http://www.biquyun.com"
     source_title = "笔趣阁"

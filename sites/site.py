@@ -6,7 +6,7 @@ import utils
 
 
 class BaseNovel:
-    _encode = "utf-8"
+    _encoding = "utf-8"
 
     id = ""
     name = ""
@@ -28,7 +28,7 @@ class BaseNovel:
 
     def __call__(self):
         # 解析基础信息
-        intro_page = utils.get_html(self.novel_link, encode=self._encode)
+        intro_page = utils.get_html(self.novel_link, encoding=self._encoding)
         self.parse_base_info(intro_page)
         self.epub = utils.EPub(self.name, self.source_title, self.source_site)
 
@@ -40,7 +40,7 @@ class BaseNovel:
         if self.read_link == self.novel_link:
             self.parse_chapter_list(intro_page)
         else:
-            read_page = base.get_html(self.read_link, encode=self._encode)
+            read_page = base.get_html(self.read_link, encode=self._encoding)
             self.parse_chapter_list(read_page)
 
         if not self.chapter_list:
@@ -70,7 +70,7 @@ class BaseNovel:
     def _download_chapter_content(self, chapter):
         chapter_file_name = self.epub.chapter_file_name(chapter["title"])
         if not self.epub.exists(chapter_file_name):
-            content_page = utils.get_html(chapter["link"], encode=self._encode)
+            content_page = utils.get_html(chapter["link"], encoding=self._encoding)
             novel_chapter = self._parse_chapter_content(chapter, content_page)
             self.epub.chapter(chapter_file_name, chapter["title"], novel_chapter)
 

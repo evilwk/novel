@@ -1,11 +1,11 @@
 import sites.biqu_parse as biqu
-from sites.site import BaseNovel
+from .site import *
 
 __all__ = ["Booktxt"]
 
 
 class Booktxt(BaseNovel):
-    _encode = "gbk"
+    _encoding = "gbk"
 
     source_site = "http://www.booktxt.net"
     source_title = "顶点小说"

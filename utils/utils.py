@@ -1,10 +1,11 @@
 # coding:utf-8
-import os
 import re
 import subprocess
 
 import requests
 from requests.adapters import HTTPAdapter
+
+from .config import *
 
 
 def match(text, *patterns):
@@ -25,46 +26,63 @@ def match(text, *patterns):
         return ret
 
 
-def get_html(url, headers=None, encode=None):
-    if headers is None:
-        headers = {}
+def get_response(url, **kwargs):
     session = requests.Session()
     session.mount('http://', HTTPAdapter(max_retries=3))
     session.mount('https://', HTTPAdapter(max_retries=3))
 
-    response = session.get(url, headers=headers)
-    if encode:
-        response.encoding = encode
-    return response.text
-
-
-def download(url, file_name, headers=None):
-    if headers is None:
-        headers = {}
-
-    headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" \
+    if "headers" not in kwargs:
+        kwargs["headers"] = {}
+    if "User-Agent" not in kwargs["headers"]:
+        kwargs["headers"][
+            "User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" \
                             " Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134"
 
-    session = requests.Session()
-    session.mount('http://', HTTPAdapter(max_retries=3))
-    session.mount('https://', HTTPAdapter(max_retries=3))
+    proxies, timeout = None, None
+    if "proxies" in kwargs:
+        proxies = kwargs["proxies"]
+        del kwargs["proxies"]
+    else:
+        proxy = get_network_proxy()
+        # http://  socks5h://
+        if len(proxy) >= 10:
+            proxies = {
+                "http": proxy,
+                "https": proxy
+            }
 
-    response = session.get(url, headers=headers)
-    with open(file_name, "wb+") as file:
-        file.write(response.content)
+    if "timeout" in kwargs:
+        timeout = kwargs["timeout"]
+        del kwargs["timeout"]
+    else:
+        timeout = get_network_timeout()
+
+    try:
+
+        return session.get(url, proxies=proxies, timeout=timeout, **kwargs)
+    except Exception as error:
+        print("request %s %s" % (url, str(error)))
+        return None
 
 
-def make_zip(source_dir, output_filename):
-    import os
-    import zipfile
-    if not os.path.isabs(source_dir):
-        source_dir = os.path.abspath(source_dir)
-    with zipfile.ZipFile(output_filename, 'w') as zip_file:
-        for parent, dirnames, filenames in os.walk(source_dir):
-            for filename in filenames:
-                file_path = os.path.join(parent, filename)
-                arc_name = file_path.replace(source_dir, "").strip(os.path.sep)
-                zip_file.write(file_path, arc_name)
+def get_html(url, encoding=None, **kwargs):
+    response = get_response(url, **kwargs)
+    if response:
+        if encoding:
+            response.encoding = encoding
+        return response.text
+    else:
+        return ""
+
+
+def download(url, file_name, **kwargs):
+    response = get_response(url, **kwargs)
+    if response:
+        with open(file_name, "wb+") as file:
+            file.write(response.content)
+        return True
+    else:
+        return False
 
 
 def is_mac_os():
