@@ -1,4 +1,6 @@
-# coding:utf-8
+# -*- coding: utf-8 -*-
+
+import os
 import re
 import subprocess
 
@@ -46,10 +48,7 @@ def get_response(url, **kwargs):
         proxy = get_network_proxy()
         # http://  socks5h://
         if len(proxy) >= 10:
-            proxies = {
-                "http": proxy,
-                "https": proxy
-            }
+            proxies = {"http": proxy, "https": proxy}
 
     if "timeout" in kwargs:
         timeout = kwargs["timeout"]
@@ -92,13 +91,14 @@ def is_mac_os():
 
 def get_usable_cmd():
     try:
-        p = subprocess.Popen(
-            ['kindlegen'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(['kindlegen'],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
         out, err = p.communicate()
         version = match(out.decode('utf-8'), r"V(\d.\d)\sbuild")
         if version:
             return True
-    except Exception as error:
+    except Exception:
         pass
     return False
 

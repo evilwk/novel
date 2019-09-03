@@ -9,7 +9,8 @@ config = {
     "www.qu.la": Qu,
     "www.biquyun.com": Biquyun,
     "www.biqubook.com": Biqubook,
-    "www.booktxt.net": Booktxt
+    "www.booktxt.net": Booktxt,
+    "www.xbiquge.la": Xbiquge,
 }
 
 

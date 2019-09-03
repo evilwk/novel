@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 
 from bs4 import BeautifulSoup
@@ -23,8 +25,8 @@ class BaseNovel:
     def __init__(self, novel_link, max_thread=10):
         self.novel_link = novel_link
         self._chapter_line_filters = self.chapter_line_filters()
-        self._downloader = utils.Downloader(
-            max_thread=max_thread, finish_func=self._download_finish)
+        self._downloader = utils.Downloader(max_thread=max_thread,
+                                            finish_func=self._download_finish)
 
     def __call__(self):
         # 解析基础信息
@@ -40,14 +42,14 @@ class BaseNovel:
         if self.read_link == self.novel_link:
             self.parse_chapter_list(intro_page)
         else:
-            read_page = base.get_html(self.read_link, encode=self._encoding)
+            read_page = utils.get_html(self.read_link, encode=self._encoding)
             self.parse_chapter_list(read_page)
 
         if not self.chapter_list:
             print("章节列表为空")
             return
-        print("%s 作者:%s 共%d章" % (self.name, self.author,
-                                 len(self.chapter_list)))
+        print("%s 作者:%s 共%d章" %
+              (self.name, self.author, len(self.chapter_list)))
         for chapter in self.chapter_list:
             self._downloader.submit(self._download_chapter_content, chapter)
 
@@ -70,9 +72,11 @@ class BaseNovel:
     def _download_chapter_content(self, chapter):
         chapter_file_name = self.epub.chapter_file_name(chapter["title"])
         if not self.epub.exists(chapter_file_name):
-            content_page = utils.get_html(chapter["link"], encoding=self._encoding)
+            content_page = utils.get_html(chapter["link"],
+                                          encoding=self._encoding)
             novel_chapter = self._parse_chapter_content(chapter, content_page)
-            self.epub.chapter(chapter_file_name, chapter["title"], novel_chapter)
+            self.epub.chapter(chapter_file_name, chapter["title"],
+                              novel_chapter)
 
     def parse_base_info(self, content):
         """解析基础信息"""

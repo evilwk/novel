@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import queue
 import sys
 import threading
@@ -59,8 +61,8 @@ class Downloader:
     def start(self):
         threads = []
         for i in range(self._max_thread):
-            thread = threading.Thread(
-                target=self._download, name="download:%d" % i)
+            thread = threading.Thread(target=self._download,
+                                      name="download:%d" % i)
             thread.start()
             threads.append(thread)
 
@@ -91,8 +93,9 @@ class Downloader:
             value = self._download_complete.value
             percent = value * 1.0 / self._download_count * 100
             done = int(value / self._download_count * DEFAULT_PROGRESS_LEN)
-            sys.stdout.write('%d/%d %.2f%% [%s%s]\r' %
-                             (value, self._download_count, percent, '#' * done,
-                              '-' * (DEFAULT_PROGRESS_LEN - done)))
+            sys.stdout.write(
+                '%d/%d %.2f%% [%s%s]\r' %
+                (value, self._download_count, percent, '#' * done, '-' *
+                 (DEFAULT_PROGRESS_LEN - done)))
             sys.stdout.flush()
             time.sleep(0.01)

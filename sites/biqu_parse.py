@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import urllib.parse as urlparse
 
 from bs4 import BeautifulSoup

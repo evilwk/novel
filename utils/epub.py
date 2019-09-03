@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+
 import os
 import string
 import time
+
 from .utils import *
 
 template_container = """<?xml version="1.0"?>
@@ -193,9 +196,13 @@ class EPub:
     def _make_temple(self, template, file_name=None, temple_args=None):
         if temple_args is None:
             temple_args = {}
-        with open(os.path.join(self._save_dir, file_name), "w+", encoding="utf-8") as out_file:
+        with open(os.path.join(self._save_dir, file_name),
+                  "w+",
+                  encoding="utf-8") as out_file:
             out_file.write(string.Template(template).substitute(**temple_args))
 
     def _write_template(self, template, file_name):
-        with open(os.path.join(self._save_dir, file_name), "w+", encoding='utf-8') as file:
+        with open(os.path.join(self._save_dir, file_name),
+                  "w+",
+                  encoding='utf-8') as file:
             file.write(template)

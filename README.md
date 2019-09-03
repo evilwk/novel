@@ -5,4 +5,5 @@ python抓取小说生成epub和mobi
 1. 笔趣阁 https://www.qu.la
 2. 笔趣阁 http://www.biquge.com
 3. 顶点小说 http://www.booktxt.net
-3. 笔趣阁 http://www.biqubook.com
+4. 笔趣阁 http://www.biqubook.com
+5. 笔趣阁 http://www.xbiquge.la
