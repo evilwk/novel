@@ -1,0 +1,87 @@
+[
+    {
+        "siteName": "笔趣阁",
+        "siteUrl": "https://www.biqubook.com",
+        "charset": "gbk",
+
+        "ruleName": "re:<meta\\s+property=\"og:novel:book_name\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleCover": "re:<meta\\s+property=\"og:image\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleAuthor": "re:<meta\\s+property=\"og:novel:author\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleCategory": "re:<meta\\s+property=\"og:novel:category\"\\s+content=\"(.*?)\"\\s*/>",
+
+        "ruleChapterUrl": "",
+        "ruleChapterItems": ".listmain dt:nth-of-type(2) ~ dd",
+        "ruleChapterName": "a@text",
+        "ruleContentUrl": "a@href",
+        "ruleChapterContent": "div.showtxt",
+        "ruleIgnoreLines": ["chaptererror();"]
+    },
+    {
+        "siteName": "笔趣阁",
+        "siteUrl": "http://www.biquyun.com",
+        "charset": "gbk",
+
+        "ruleName": "re:<meta\\s+property=\"og:novel:book_name\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleCover": "re:<meta\\s+property=\"og:image\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleAuthor": "re:<meta\\s+property=\"og:novel:author\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleCategory": "re:<meta\\s+property=\"og:novel:category\"\\s+content=\"(.*?)\"\\s*/>",
+
+        "ruleChapterUrl": "",
+        "ruleChapterItems": "#list dt:nth-of-type(2) ~ dd",
+        "ruleChapterName": "a@text",
+        "ruleContentUrl": "a@href",
+        "ruleChapterContent": "#content",
+        "ruleIgnoreLines": ["chaptererror();"]
+    },
+    {
+        "siteName": "顶点小说",
+        "siteUrl": "http://www.booktxt.net/",
+        "charset": "gbk",
+
+        "ruleName": "re:<meta\\s+property=\"og:novel:book_name\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleCover": "re:<meta\\s+property=\"og:image\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleAuthor": "re:<meta\\s+property=\"og:novel:author\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleCategory": "re:<meta\\s+property=\"og:novel:category\"\\s+content=\"(.*?)\"\\s*/>",
+
+        "ruleChapterUrl": "",
+        "ruleChapterItems": "#list dt:nth-of-type(2) ~ dd",
+        "ruleChapterName": "a@text",
+        "ruleContentUrl": "a@href",
+        "ruleChapterContent": "#content",
+        "ruleIgnoreLines": ["chaptererror();"]
+    },
+    {
+        "siteName": "笔趣阁",
+        "siteUrl": "https://www.qu.la",
+        "charset": "utf-8",
+
+        "ruleName": "re:<meta\\s+property=\"og:novel:book_name\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleCover": "re:<meta\\s+property=\"og:image\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleAuthor": "re:<meta\\s+property=\"og:novel:author\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleCategory": "re:<meta\\s+property=\"og:novel:category\"\\s+content=\"(.*?)\"\\s*/>",
+
+        "ruleChapterUrl": "",
+        "ruleChapterItems": "#list dt:nth-of-type(2) ~ dd",
+        "ruleChapterName": "a@text",
+        "ruleContentUrl": "a@href",
+        "ruleChapterContent": "#content",
+        "ruleIgnoreLines": ["chaptererror();", "<!--divstyle=\"color:#f00\">"]
+    },
+    {
+        "siteName": "笔趣阁",
+        "siteUrl": "https://www.qu.la",
+        "charset": "utf-8",
+
+        "ruleName": "re:<meta\\s+property=\"og:novel:book_name\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleCover": "re:<meta\\s+property=\"og:image\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleAuthor": "re:<meta\\s+property=\"og:novel:author\"\\s+content=\"(.*?)\"\\s*/>",
+        "ruleCategory": "re:<meta\\s+property=\"og:novel:category\"\\s+content=\"(.*?)\"\\s*/>",
+
+        "ruleChapterUrl": "",
+        "ruleChapterItems": "#list dd",
+        "ruleChapterName": "a@text",
+        "ruleContentUrl": "a@href",
+        "ruleChapterContent": "#content",
+        "ruleIgnoreLines": ["chaptererror();", "<!--divstyle=\"color:#f00\">"]
+    }
+]

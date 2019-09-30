@@ -32,10 +32,10 @@ template_content_opf = """<?xml version="1.0" encoding="utf-8"?>
     <dc:creator>${author}</dc:creator>
     <dc:language>zh-CN</dc:language>
     <dc:date>${create_time}</dc:date>
-    <dc:contributor>${source_title}</dc:contributor>
-    <dc:publisher>${source_title}, ${source_site}</dc:publisher>
+    <dc:contributor>${site_name}</dc:contributor>
+    <dc:publisher>${site_name}, ${site_url}</dc:publisher>
     <dc:subject>${book_subject}</dc:subject>
-    <dc:rights>Copyright (C) 2002-2008 ${source_site}</dc:rights>
+    <dc:rights>Copyright (C) 2002-2008 ${site_url}</dc:rights>
     <meta name="cover" content="cover-image"/>
   </metadata>
   <manifest>
@@ -69,14 +69,14 @@ template_title = """<?xml version='1.0' encoding='utf-8' ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN"><head><title>封面</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link href="stylesheet.css" type="text/css" rel="stylesheet" /><style type="text/css">@page { margin-bottom: 5pt; margin-top: 5pt; }</style></head>
 <body>
 <div class="cover">
-<a href="${book_link}" target="_blank" title="访问《${book_title}》官方页面"><img src="cover.jpg" alt="${book_title}" /></a>
+<a href="${book_url}" target="_blank" title="访问《${book_title}》官方页面"><img src="cover.jpg" alt="${book_title}" /></a>
 </div>
 <div class="bookinfo">
 <ul>
-<li><b>书名</b>：<a href="${book_link}" target="_blank" title="访问《${book_title}》官方页面">${book_title}</a></li>
+<li><b>书名</b>：<a href="${book_url}" target="_blank" title="访问《${book_title}》官方页面">${book_title}</a></li>
 <li><b>主题</b>：${book_subject}</li>
 </ul>
-<ul><li><b>${source_title}</b>：<a href="${source_site}" target="_blank">${source_site}</a></li></ul>
+<ul><li><b>${site_name}</b>：<a href="${site_url}" target="_blank">${site_url}</a></li></ul>
 </div>
 </body>
 </html>"""
@@ -131,19 +131,19 @@ def make_zip(source_dir, output_filename):
 
 
 class EPub:
-    def __init__(self, name, source_title="", source_site=""):
+    def __init__(self, name, site_name="", site_url=""):
         self.name = name
-        self.source_title = source_title  # 网站标题
-        self.source_site = source_site  # 网站地址
-        self.chapter_list = []
+        self.site_name = site_name  # 网站标题
+        self.site_url = site_url  # 网站地址
+        self.chapters = []
 
         self._save_dir = os.path.join("./epub", self.name)
         if not os.path.exists(self._save_dir):
             os.makedirs(os.path.join(self._save_dir, "META-INF"))
 
-    def chapter_file_name(self, title):
-        chapter = {'index': len(self.chapter_list), 'title': title}
-        self.chapter_list.append(chapter)
+    def chapter_file_name(self, chapter_name):
+        chapter = {'index': len(self.chapters), 'title': chapter_name}
+        self.chapters.append(chapter)
         return "chapter_%d.html" % chapter["index"]
 
     def exists(self, file_name):
@@ -163,8 +163,8 @@ class EPub:
         nav = []
 
         nav_index = 2
-        for i in range(len(self.chapter_list)):
-            chapter = self.chapter_list[i]
+        for i in range(len(self.chapters)):
+            chapter = self.chapters[i]
             file_id = "chapter_%d" % chapter["index"]
             manifest.append(manifest_item_temple.format(file_id))
             spine.append(spine_item_temple.format(file_id))
@@ -172,8 +172,8 @@ class EPub:
                 nav_point_temple.format(file_id, nav_index, chapter["title"]))
             nav_index += 1
 
-        info["source_title"] = self.source_title
-        info["source_site"] = self.source_site
+        info["site_name"] = self.site_name
+        info["site_url"] = self.site_url
         info["book_title"] = self.name
         info["create_time"] = get_time()
         info["manifest_item"] = "\n".join(manifest)

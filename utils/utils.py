@@ -14,7 +14,7 @@ def match(text, *patterns):
     """匹配正则表达式的第一个结果"""
     if len(patterns) == 1:
         pattern = patterns[0]
-        m = re.search(pattern, text)
+        m = re.search(pattern, text, re.DOTALL)
         if m:
             return m.group(1)
         else:
@@ -22,7 +22,7 @@ def match(text, *patterns):
     else:
         ret = []
         for pattern in patterns:
-            m = re.search(pattern, text)
+            m = re.search(pattern, text, re.DOTALL)
             if m:
                 ret.append(m.group(1))
         return ret
@@ -57,8 +57,12 @@ def get_response(url, **kwargs):
         timeout = get_network_timeout()
 
     try:
-
-        return session.get(url, proxies=proxies, timeout=timeout, **kwargs)
+        requests.packages.urllib3.disable_warnings()
+        return session.get(url,
+                           proxies=proxies,
+                           verify=False,
+                           timeout=timeout,
+                           **kwargs)
     except Exception as error:
         print("request %s %s" % (url, str(error)))
         return None
