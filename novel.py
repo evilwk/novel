@@ -3,13 +3,11 @@
 import os
 
 import urllib.parse as urlparse
-from optparse import OptionParser
+import argparse
 
 import json
 import utils
 import re
-import time
-import hashlib
 
 from bs4 import BeautifulSoup
 
@@ -149,10 +147,6 @@ class NovelEngine:
     def _get_analyzer(self, content, element):
         return AnalyzeRule(self._site_rule, content, element)
 
-    def create_id(self):
-        m = hashlib.md5(str(time.clock()).encode('utf-8'))
-        return m.hexdigest()
-
     def start(self):
         # 加载规则
         self._load_rule()
@@ -162,7 +156,7 @@ class NovelEngine:
         basic_soup = BeautifulSoup(basic_content, "html.parser")
 
         basic_analyzer = self._get_analyzer(basic_content, basic_soup)
-        self.id = self.create_id()
+        self.id = 0
         self.name = basic_analyzer.get_text("ruleName")
         self.cover = basic_analyzer.get_text("ruleCover")
         self.author = basic_analyzer.get_text("ruleAuthor")
@@ -262,18 +256,15 @@ class NovelEngine:
 
 
 def get_args():
-    parser = OptionParser()
-    parser.add_option("url", narg=1)
-    parser.add_option("-t",
-                      "--thread",
-                      dest="thread",
-                      type="int",
-                      help="set thread count")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('url', nargs=1)
+    parser.add_argument("--thread", default=10, type=int)
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = get_args()
+    print(args)
     url = args.url[0]
     engine = NovelEngine(url, max_thread=args.thread)
     engine.start()
