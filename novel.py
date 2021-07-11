@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import os
-
-import urllib.parse as urlparse
 import argparse
-
 import json
-import utils
-import re
+import os
+import urllib.parse as urlparse
 
 from bs4 import BeautifulSoup
+
+import utils
+from utils import EPub
+
+BIQUGE_RULE_NAME = "re:<meta\\s+property=\"og:novel:book_name\"\\s+content=\"(.*?)\"\\s*/>"
+BIQUGE_RULE_COVER = "re:<meta\\s+property=\"og:image\"\\s+content=\"(.*?)\"\\s*/>"
+BIQUGE_RULE_AUTHOR = "re:<meta\\s+property=\"og:novel:author\"\\s+content=\"(.*?)\"\\s*/>"
+BIQUGE_RULE_CATEGORY = "re:<meta\\s+property=\"og:novel:category\"\\s+content=\"(.*?)\"\\s*/>"
 
 
 class AnalyzeRule:
@@ -18,15 +22,18 @@ class AnalyzeRule:
         self._content = content
         self._element = element
 
-    def _is_re(self, rule):
+    @staticmethod
+    def _is_re(rule):
         return rule.startswith("re:")
 
-    def _get_rule(self, rule):
-        if self._is_re(rule):
+    @staticmethod
+    def _get_rule(rule):
+        if AnalyzeRule._is_re(rule):
             return rule[3:]
         return rule.split("@")
 
-    def _get_attr(self, element, name):
+    @staticmethod
+    def _get_attr(element, name):
         if name == "text":
             return element.get_text()
 
@@ -54,11 +61,14 @@ class AnalyzeRule:
         if not rule:
             return default
         if self._is_re(rule):
-            return utils.match(self._content, self._get_rule(rule))
+            return self.get_re_text(rule)
         else:
             texts = self.get_texts(rule_name)
             if texts:
                 return texts[0]
+
+    def get_re_text(self, rule):
+        return utils.match(self._content, self._get_rule(rule))
 
     def get_texts(self, rule_name):
         elements = self.get_elements(rule_name)
@@ -79,28 +89,28 @@ class AnalyzeRule:
 
 
 class NovelRule(object):
-    def __init__(self, map):
-        self.map = map
+    def __init__(self, site_rule):
+        self._site_rule = site_rule
 
     def __getattr__(self, name):
-        if name not in self.map:
-            return (None)
+        if name not in self._site_rule:
+            return None
 
-        v = self.map[name]
-        if isinstance(v, (dict)):
-            return ((dict)(v))
-        if isinstance(v, (list)):
+        v = self._site_rule[name]
+        if isinstance(v, dict):
+            return dict(v)
+        if isinstance(v, list):
             r = []
             for i in v:
                 r.append(i)
-            return (r)
+            return r
         else:
-            return (self.map[name])
+            return self._site_rule[name]
 
     def __getitem__(self, name):
-        if name not in self.map:
-            return (None)
-        return (self.map[name])
+        if name not in self._site_rule:
+            return None
+        return self._site_rule[name]
 
 
 class NovelEngine:
@@ -110,10 +120,11 @@ class NovelEngine:
     author = ""
     category = ""  # 分类
 
+    _epub = None
     _site_rule = None
 
-    def __init__(self, url, max_thread=10):
-        self._url = url
+    def __init__(self, novel_url, max_thread=10):
+        self._url = novel_url
         if not max_thread:
             max_thread = 10
         self._downloader = utils.Downloader(max_thread=max_thread,
@@ -157,10 +168,16 @@ class NovelEngine:
 
         basic_analyzer = self._get_analyzer(basic_content, basic_soup)
         self.id = 0
-        self.name = basic_analyzer.get_text("ruleName")
-        self.cover = basic_analyzer.get_text("ruleCover")
-        self.author = basic_analyzer.get_text("ruleAuthor")
-        self.category = basic_analyzer.get_text("ruleCategory")
+        if self._site_rule["isBiquge"]:
+            self.name = basic_analyzer.get_re_text(BIQUGE_RULE_NAME)
+            self.cover = basic_analyzer.get_re_text(BIQUGE_RULE_COVER)
+            self.author = basic_analyzer.get_re_text(BIQUGE_RULE_AUTHOR)
+            self.category = basic_analyzer.get_re_text(BIQUGE_RULE_CATEGORY)
+        else:
+            self.name = basic_analyzer.get_text("ruleName")
+            self.cover = basic_analyzer.get_text("ruleCover")
+            self.author = basic_analyzer.get_text("ruleAuthor")
+            self.category = basic_analyzer.get_text("ruleCategory")
 
         self._epub = utils.EPub(self.name, self._site_rule.siteName,
                                 self._site_rule.siteUrl)
@@ -187,11 +204,11 @@ class NovelEngine:
             item_text = str(chapter_item)
             analyzer = self._get_analyzer(item_text, chapter_item)
             name = analyzer.get_text("ruleChapterName")
-            url = analyzer.get_text("ruleContentUrl")
+            content_url = analyzer.get_text("ruleContentUrl")
             # yapf: disable
             chapters.append({
                 'index': index,
-                'url': urlparse.urljoin(self._url, url),
+                'url': urlparse.urljoin(self._url, content_url),
                 'name': name
             })
             # yapf: enable
@@ -246,7 +263,8 @@ class NovelEngine:
             lines.append("<p>　　%s</p>" % strip_line)
         return "\n".join(lines)
 
-    def _ignore_line(self, ignore_lines, line):
+    @staticmethod
+    def _ignore_line(ignore_lines, line):
         if not ignore_lines:
             return False
         for ignore_line in ignore_lines:
@@ -264,7 +282,6 @@ def get_args():
 
 if __name__ == "__main__":
     args = get_args()
-    print(args)
     url = args.url[0]
     engine = NovelEngine(url, max_thread=args.thread)
     engine.start()
