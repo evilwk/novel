@@ -13,58 +13,6 @@
         "ruleIgnoreLines": ["chaptererror();"]
     },
     {
-        "siteName": "笔趣阁",
-        "siteUrl": "http://www.biquyun.com",
-        "charset": "gbk",
-
-        "isBiquge": true,
-        "ruleChapterUrl": "",
-        "ruleChapterItems": "#list dt:nth-of-type(2) ~ dd",
-        "ruleChapterName": "a@text",
-        "ruleContentUrl": "a@href",
-        "ruleChapterContent": "#content",
-        "ruleIgnoreLines": ["chaptererror();"]
-    },
-    {
-        "siteName": "顶点小说",
-        "siteUrl": "http://www.booktxt.net/",
-        "charset": "gbk",
-
-        "isBiquge": true,
-        "ruleChapterUrl": "",
-        "ruleChapterItems": "#list dt:nth-of-type(2) ~ dd",
-        "ruleChapterName": "a@text",
-        "ruleContentUrl": "a@href",
-        "ruleChapterContent": "#content",
-        "ruleIgnoreLines": ["chaptererror();"]
-    },
-    {
-        "siteName": "笔趣阁",
-        "siteUrl": "https://www.qu.la",
-        "charset": "utf-8",
-
-        "isBiquge": true,
-        "ruleChapterUrl": "",
-        "ruleChapterItems": "#list dt:nth-of-type(2) ~ dd",
-        "ruleChapterName": "a@text",
-        "ruleContentUrl": "a@href",
-        "ruleChapterContent": "#content",
-        "ruleIgnoreLines": ["chaptererror();", "<!--divstyle=\"color:#f00\">"]
-    },
-    {
-        "siteName": "笔趣阁",
-        "siteUrl": "https://www.qu.la",
-        "charset": "utf-8",
-
-        "isBiquge": true,
-        "ruleChapterUrl": "",
-        "ruleChapterItems": "#list dd",
-        "ruleChapterName": "a@text",
-        "ruleContentUrl": "a@href",
-        "ruleChapterContent": "#content",
-        "ruleIgnoreLines": ["chaptererror();", "<!--divstyle=\"color:#f00\">"]
-    },
-    {
         "siteName": "绿色小说网",
         "siteUrl": "https://www.lvsetxt.com",
         "charset": "gbk",
