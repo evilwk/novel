@@ -3,26 +3,14 @@
         "siteName": "笔趣阁",
         "siteUrl": "https://www.biqubook5.com",
         "charset": "gbk",
-
         "isBiquge": true,
         "ruleChapterUrl": "",
         "ruleChapterItems": ".listmain dt:nth-of-type(2) ~ dd",
         "ruleChapterName": "a@text",
         "ruleContentUrl": "a@href",
         "ruleChapterContent": "div.showtxt",
-        "ruleIgnoreLines": ["chaptererror();"]
-    },
-    {
-        "siteName": "绿色小说网",
-        "siteUrl": "https://www.lvsetxt.com",
-        "charset": "gbk",
-
-        "isBiquge": true,
-        "ruleChapterUrl": "",
-        "ruleChapterItems": ".listmain dt:nth-of-type(2) ~ dd",
-        "ruleChapterName": "a@text",
-        "ruleContentUrl": "a@href",
-        "ruleChapterContent": "#content",
-        "ruleIgnoreLines": ["chaptererror();", "<!--divstyle=\"color:#f00\">"]
+        "ruleIgnoreLines": [
+            "chaptererror();"
+        ]
     }
 ]
