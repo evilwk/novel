@@ -29,6 +29,8 @@ def _build_session(pool_size: int) -> requests.Session:
     retry = Retry(
         total=5,
         backoff_factor=1.0,
+        # 撞限流时所有线程会同时开始退避，加抖动免得它们再一起冲上去
+        backoff_jitter=1.0,
         status_forcelist=(429, 500, 502, 503, 504),
         allowed_methods=("GET",),
         # 限流站点常在 429 里带 Retry-After，按它等更准

@@ -16,9 +16,18 @@ from .utils.http import get_html, get_session
 
 
 class NovelEngine:
-    def __init__(self, novel_url: str, max_thread: int = 10) -> None:
+    def __init__(
+        self,
+        novel_url: str,
+        max_thread: int = 10,
+        interval: float | None = None,
+        jitter: float | None = None,
+    ) -> None:
         self._url = novel_url
         self._max_thread = max_thread or 10
+        # 命令行给的值优先于站点规则，None 表示没指定
+        self._interval = interval
+        self._jitter = jitter
 
         self.id: int = 0
         self.name: str | None = ""
@@ -62,11 +71,23 @@ class NovelEngine:
             return url
         return urlparse.urljoin(self._url, url)
 
+    def _pick(self, override: float | None, rule_field: str, fallback: float) -> float:
+        """限流参数取值：命令行 > 站点规则 > 默认值"""
+        if override is not None:
+            return override
+
+        value = self._rule[rule_field]
+        return float(value) if value is not None else fallback
+
     def _apply_limits(self) -> None:
-        """套用站点的限流配置"""
-        interval = self._rule.requestInterval
-        if interval:
-            throttle.configure(float(interval))
+        """套用限流配置，命令行优先于站点规则"""
+        interval = self._pick(self._interval, "requestInterval", 0.0)
+        jitter = self._pick(self._jitter, "requestJitter", throttle.DEFAULT_JITTER)
+
+        # 无条件配置，interval 为 0 时正好把节流器重置成不限速
+        throttle.configure(interval, jitter)
+        if interval > 0:
+            print("请求间隔 %.1fs 抖动 ±%d%%" % (interval, round(jitter * 100)))
 
         limit = self._rule.maxThread
         if limit and self._max_thread > int(limit):
@@ -173,9 +194,9 @@ class NovelEngine:
 
     def _analyze_chapter(self, chapter: Chapter, content: str) -> str:
         lines = self.chapter_lines(content)
-        if lines is None:
+        if not lines:
             console.log("%s章节解析错误" % chapter["url"])
-            return ""
+            raise NovelError("章节下载失败：无法解析正文（%s）" % chapter["name"])
 
         return "\n".join("<p>　　%s</p>" % line for line in lines)
 

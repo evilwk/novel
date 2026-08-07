@@ -48,7 +48,14 @@ class EPub:
         return "chapter_%d.html" % index
 
     def exists(self, file_name: str) -> bool:
-        return (self._save_dir / file_name).exists()
+        path = self._save_dir / file_name
+        if not path.exists():
+            return False
+
+        try:
+            return "<p>" in path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            return False
 
     def chapter(self, file_name: str, title: str | None, content: str) -> None:
         self._make_temple(

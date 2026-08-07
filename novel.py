@@ -14,6 +14,16 @@ def get_args() -> argparse.Namespace:
     parser.add_argument("url", nargs=1, help="小说目录页地址")
     parser.add_argument("--thread", default=10, type=int, help="并发下载线程数")
     parser.add_argument(
+        "--interval",
+        type=float,
+        help="每次请求的最小间隔秒数，覆盖规则里的 requestInterval",
+    )
+    parser.add_argument(
+        "--jitter",
+        type=float,
+        help="间隔的随机抖动比例，0.3 表示 ±30%%，给 0 关闭，覆盖规则里的 requestJitter",
+    )
+    parser.add_argument(
         "--check",
         action="store_true",
         help="只验证规则：解析书籍信息、目录和一章正文后退出",
@@ -34,7 +44,12 @@ def main() -> int:
         if args.check:
             return 1 if validate.run(url, args.chapter) else 0
 
-        NovelEngine(url, max_thread=args.thread).start()
+        NovelEngine(
+            url,
+            max_thread=args.thread,
+            interval=args.interval,
+            jitter=args.jitter,
+        ).start()
     except NovelError as error:
         print(error)
         return 1
