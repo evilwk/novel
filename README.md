@@ -16,11 +16,11 @@ uv sync
 uv run novel.py <小说目录页URL> [--thread 10]
 ```
 
-生成的文件在 `epub/` 下。已下载的章节会跳过，中断后重跑可以续传。
+生成的文件在 `epub/` 目录中，已下载的章节会跳过，中断后重跑可以续传。
 
 ## 限速
 
-站点封 IP 一般是因为请求太密、节奏太整齐。限速写在规则里，跟着站点走：
+限速可以写在规则里，跟着站点走：
 
 ```json
 {
@@ -30,17 +30,14 @@ uv run novel.py <小说目录页URL> [--thread 10]
 }
 ```
 
-- `requestInterval` 是全局的请求最小间隔秒数，所有线程共用一个节流器，所以 `maxThread: 2` 加 `requestInterval: 1.5` 是每 1.5s 总共发一个请求，不是每线程
-- `requestJitter` 给间隔加随机抖动，默认 `0.3`（±30%），上面那份配置实际是每 2.1~3.9s 一个请求。固定节奏容易被识别成机器，`0` 才关掉
-- 撞上 429 之后各线程的重试退避也是错开的，不会一起冲上去
+- `requestInterval` 全局的请求最小间隔秒数，所有线程共用一个节流器。
+- `requestJitter` 给间隔加随机抖动，默认 `0.3`（±30%）。
 
-临时试参数可以用命令行覆盖，不用改规则：
+也可以用命令行覆盖，不用改规则：
 
 ```bash
 uv run novel.py <URL> --thread 1 --interval 3 --jitter 0.5
 ```
-
-代理在 `config.ini` 里配 `proxy`。
 
 ## 验证规则
 
@@ -49,8 +46,6 @@ uv run novel.py <URL> --thread 1 --interval 3 --jitter 0.5
 ```bash
 uv run novel.py <小说目录页URL> --check [--chapter 0]
 ```
-
-会逐条打出规则的命中结果，全部命中时退出码为 0。
 
 ## 站点规则
 
